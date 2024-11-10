@@ -21,26 +21,36 @@ class ProgramKerja
 
     public function fetchAllProgramKerja()
     {
-        // implementasi fetch all rows with select
+        $stmt = $this->db->query("SELECT * FROM program_kerja");
+        return $stmt->fetch_all(MYSQLI_ASSOC);
     }
-
     public function fetchOneProgramKerja(int $nomorProgram)
     {
-        // implementasi fetch one row by nomor proker with select
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM program_kerja WHERE nomor = $nomorProgram");
+        return $result->fetch_assoc();
     }
 
     public function insertProgramKerja() 
     {
-        // implementasi sql insert
+        global $mysqli;
+        $result = $mysqli->query("INSERT INTO program_kerja (nama, surat_keterangan) VALUES ('$this->nama', '$this->suratKeterangan')");
+        return $result;
     }
 
     public function updateProgramKerja()
     {
-        // implementasi sql update
+        global $mysqli;
+        $stmt = $mysqli->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
+        $stmt->bind_param("ssi", $nama, $suratKeterangan, $nomorProgram);
+        return $stmt->execute();
     }
 
     public function deleteProgramKerja()
     {
-        // implementasi sql delete   
+        global $mysqli;
+        $stmt = $mysqli->prepare("DELETE FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $this->nomorProgram);
+        return $stmt->execute();
     }
 }

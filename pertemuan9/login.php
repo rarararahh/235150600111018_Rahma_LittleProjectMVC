@@ -5,9 +5,9 @@ header("Location: view/list_proker.php");
 $controller = new PengurusController();
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $controller->viewRegister();
+    $controller->viewLogin();
 } else {
-    $controller->registerAccount();
+    $controller->loginAccount();
 }
 
 exit();

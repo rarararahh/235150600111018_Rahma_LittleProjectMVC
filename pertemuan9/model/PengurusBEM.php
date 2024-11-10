@@ -2,54 +2,55 @@
 
 require("config/koneksi_mysql.php");
 
-class PengurusBEM 
+class ProgramKerja 
 {
+    private int $nomorProgram;
     private string $nama;
-    private string $nim;
-    private int $angkatan;
-    private string $jabatan;
-    private string $foto;
-    private string $password;
+    private string $suratKeterangan;
 
     public function createModel(
+        $nomorProgram = "",
         $nama = "",
-        $nim = "",
-        $angkatan = "",
-        $jabatan = "",
-        $foto = "",
-        $password = "",
+        $suratKeterangan = "",
     )
     {
+        $this->nomorProgram = $nomorProgram;
         $this->nama = $nama;
-        $this->nim = $nim;
-        $this->angkatan = $angkatan;
-        $this->jabatan = $jabatan;
-        $this->foto = $foto;
-        $this->password = $password;
+        $this->suratKeterangan = $suratKeterangan;
     }
 
-    public function fetchAllPengurusBEM()
+    public function fetchAllProgramKerja()
     {
-        // implementasi fetch all rows with select
+        $stmt = $this->db->query("SELECT * FROM program_kerja");
+        return $stmt->fetch_all(MYSQLI_ASSOC);
+    }
+    public function fetchOneProgramKerja(int $nomorProgram)
+    {
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM program_kerja WHERE nomor = $nomorProgram");
+        return $result->fetch_assoc();
     }
 
-    public function fetchOnePengurusBEM(string $nim)
+    public function insertProgramKerja() 
     {
-        // implementasi fetch one row by nim with select
+        global $mysqli;
+        $result = $mysqli->query("INSERT INTO program_kerja (nama, surat_keterangan) VALUES ('$this->nama', '$this->suratKeterangan')");
+        return $result;
     }
 
-    public function insertPengurusBEM() 
+    public function updateProgramKerja()
     {
-        $result = $mysqli->query("INSERT INTO pengurus_bem VALUES ('$this->nama', '$this->nim', '$this->angkatan', '$this->jabatan', '$this->foto', '$this->password')");
+        global $mysqli;
+        $stmt = $mysqli->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
+        $stmt->bind_param("ssi", $nama, $suratKeterangan, $nomorProgram);
+        return $stmt->execute();
     }
 
-    public function updatePengurusBEM()
+    public function deleteProgramKerja()
     {
-        // implementasi sql update
-    }
-
-    public function deletePengurusBEM()
-    {
-        // implementasi sql delete   
+        global $mysqli;
+        $stmt = $mysqli->prepare("DELETE FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $this->nomorProgram);
+        return $stmt->execute();
     }
 }
