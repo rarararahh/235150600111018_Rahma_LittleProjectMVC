@@ -1,12 +1,19 @@
 <?php
 
-require("config/koneksi_mysql.php");
+require("../config/koneksi_mysql.php");
 
 class ProgramKerja 
 {
     private int $nomorProgram;
+    private $db;
     private string $nama;
     private string $suratKeterangan;
+
+    public function __construct()
+    {
+        global $mysqli;
+        $this->db = $mysqli;
+    }
 
     public function createModel(
         $nomorProgram = "",
@@ -21,36 +28,37 @@ class ProgramKerja
 
     public function fetchAllProgramKerja()
     {
+        global $mysqli;
         $stmt = $this->db->query("SELECT * FROM program_kerja");
         return $stmt->fetch_all(MYSQLI_ASSOC);
     }
     public function fetchOneProgramKerja(int $nomorProgram)
     {
-        global $mysqli;
-        $result = $mysqli->query("SELECT * FROM program_kerja WHERE nomor = $nomorProgram");
+        $stmt = $this->db->prepare("SELECT * FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $nomorProgram);
+        $stmt->execute();
+        $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
 
-    public function insertProgramKerja() 
+    public function insertProgramKerja($nomor, $nama, $surat_keterangan) 
     {
-        global $mysqli;
-        $result = $mysqli->query("INSERT INTO program_kerja (nama, surat_keterangan) VALUES ('$this->nama', '$this->suratKeterangan')");
-        return $result;
-    }
-
-    public function updateProgramKerja()
-    {
-        global $mysqli;
-        $stmt = $mysqli->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
-        $stmt->bind_param("ssi", $nama, $suratKeterangan, $nomorProgram);
+        $stmt = $this->db->prepare("INSERT INTO program_kerja (nomor, nama, surat_keterangan) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $nomor, $nama, $surat_keterangan);
         return $stmt->execute();
     }
 
-    public function deleteProgramKerja()
+    public function updateProgramKerja($nomorProgram, $nama, $surat_keterangan)
     {
-        global $mysqli;
-        $stmt = $mysqli->prepare("DELETE FROM program_kerja WHERE nomor = ?");
-        $stmt->bind_param("i", $this->nomorProgram);
+        $stmt = $this->db->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
+        $stmt->bind_param("ssi", $nama, $surat_keterangan, $nomorProgram);
+        return $stmt->execute();
+    }
+
+    public function deleteProgramKerja($nomor)
+    {
+        $stmt = $this->db->prepare("DELETE FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $nomor);
         return $stmt->execute();
     }
 }

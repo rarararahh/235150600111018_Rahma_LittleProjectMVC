@@ -11,6 +11,11 @@
     </style>
 </head>
 <body>
+<?php
+include_once '../controllers/ProgramKerja.php';
+$controller = new ProgramKerjaController();
+$programList = $controller->programModel->fetchAllProgramKerja();
+?>
     <h2>Daftar Program Kerja</h2>
     <table>
         <tr>
@@ -19,14 +24,16 @@
             <th>Surat Keterangan</th>
             <th>Aksi</th>
         </tr>
-        <?php if (!empty($listProker)): ?>
-            <?php foreach ($listProker as $proker): ?>
+        <?php if (!empty($programList)): ?>
+            <?php foreach ($programList as $proker): ?>
                 <tr>
                     <td><?= $proker['nomor'] ?></td>
                     <td><?= $proker['nama'] ?></td>
                     <td><?= $proker['surat_keterangan'] ?></td>
                     <td>
-                        <a href="edit_proker.php?nomor=<?= $proker['nomor'] ?>">Edit</a> |
+                    <a href="edit_proker.php?nomor=<?= $proker['nomor'] ?>">Edit</a>                    |
+                    <a href="../controllers/ProgramKerja.php?action=deleteProker&nomor=<?= $proker['nomor'] ?>" 
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus?')">Hapus</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -36,6 +43,7 @@
             </tr>
         <?php endif; ?>
     <a href="add_proker.php">Tambah Program Kerja</a>
+    <a href="../controllers/PengurusController.php?action=logout" onclick="return confirm('Anda yakin ingin logout?')">Logout</a>
 
 </body>
 </html>

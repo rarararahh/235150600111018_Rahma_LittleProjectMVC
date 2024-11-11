@@ -1,13 +1,13 @@
 <?php
 include_once("controllers/PengurusController.php");
-header("Location: view/list_proker.php");
+header("Location: views/list_proker.php");
 
 $controller = new PengurusController();
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $controller->viewLogin();
-} else {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $controller->loginAccount();
+} else {
+    $controller->viewLogin();
 }
 
 exit();

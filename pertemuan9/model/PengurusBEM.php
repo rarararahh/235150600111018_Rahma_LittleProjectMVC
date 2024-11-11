@@ -1,56 +1,86 @@
 <?php
 
-require("config/koneksi_mysql.php");
+require("../config/koneksi_mysql.php");
 
-class ProgramKerja 
+class PengurusBEM
 {
-    private int $nomorProgram;
     private string $nama;
-    private string $suratKeterangan;
+    private string $nim;
+    private int $angkatan;
+    private string $jabatan;
+    private string $foto;
+    private string $password;
 
     public function createModel(
-        $nomorProgram = "",
         $nama = "",
-        $suratKeterangan = "",
-    )
-    {
-        $this->nomorProgram = $nomorProgram;
+        $nim = "",
+        $angkatan = "",
+        $jabatan = "",
+        $foto = "",
+        $password = "",
+    ) {
         $this->nama = $nama;
-        $this->suratKeterangan = $suratKeterangan;
+        $this->nim = $nim;
+        $this->angkatan = $angkatan;
+        $this->jabatan = $jabatan;
+        $this->foto = $foto;
+        $this->password = $password;
     }
 
-    public function fetchAllProgramKerja()
-    {
-        $stmt = $this->db->query("SELECT * FROM program_kerja");
-        return $stmt->fetch_all(MYSQLI_ASSOC);
-    }
-    public function fetchOneProgramKerja(int $nomorProgram)
+    public function fetchAllPengurusBEM()
     {
         global $mysqli;
-        $result = $mysqli->query("SELECT * FROM program_kerja WHERE nomor = $nomorProgram");
+        $result = $mysqli->query("SELECT * FROM pengurus_bem");
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function fetchOnePengurusBEM(string $nim)
+    {
+        global $mysqli;
+        $stmt = $mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
 
-    public function insertProgramKerja() 
+    public function insertPengurusBEM()
     {
         global $mysqli;
-        $result = $mysqli->query("INSERT INTO program_kerja (nama, surat_keterangan) VALUES ('$this->nama', '$this->suratKeterangan')");
-        return $result;
-    }
-
-    public function updateProgramKerja()
-    {
-        global $mysqli;
-        $stmt = $mysqli->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
-        $stmt->bind_param("ssi", $nama, $suratKeterangan, $nomorProgram);
+        $stmt = $mysqli->prepare("INSERT INTO pengurus_bem (nama, nim, angkatan, jabatan, foto, password) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssisss", $this->nama, $this->nim, $this->angkatan, $this->jabatan, $this->foto, $this->password);
         return $stmt->execute();
     }
 
-    public function deleteProgramKerja()
+    public function updatePengurusBEM()
     {
         global $mysqli;
-        $stmt = $mysqli->prepare("DELETE FROM program_kerja WHERE nomor = ?");
-        $stmt->bind_param("i", $this->nomorProgram);
+        $stmt = $mysqli->prepare("UPDATE pengurus_bem SET nama = ?, angkatan = ?, jabatan = ?, foto = ?, password = ? WHERE nim = ?");
+        $stmt->bind_param("sissss", $this->nama, $this->angkatan, $this->jabatan, $this->foto, $this->password, $this->nim);
         return $stmt->execute();
     }
+
+    public function deletePengurusBEM()
+    {
+        global $mysqli;
+        $stmt = $mysqli->prepare("DELETE FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $this->nim);
+        return $stmt->execute();
+    }
+
+    public function validateLogin($nim, $password)
+    {
+        global $mysqli;
+        $stmt = $mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $data = $result->fetch_assoc();
+            return password_verify($password, $data['password']) ? $data : false;
+        }
+        return false;
+    }
+    
 }

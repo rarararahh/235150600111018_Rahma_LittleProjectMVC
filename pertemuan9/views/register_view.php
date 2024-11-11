@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2>Register</h2>
-    <form method="POST" action="register.php">
+    <form method="POST" action="../register.php">
         <input type="text" name="nama" placeholder="Nama" required><br><br>
         <input type="text" name="nim" placeholder="NIM" required><br><br>
         <input type="number" name="angkatan" placeholder="Angkatan" required><br><br>

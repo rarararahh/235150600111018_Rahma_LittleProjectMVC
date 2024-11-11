@@ -1,19 +1,20 @@
 <?php
 
-include_once("model/PengurusBEM.php");
+include_once("../model/PengurusBEM.php");
 
 class PengurusController 
 {
-    private $pengurusModel;
+    public $pengurusModel;
 
     public function __construct()
     {
         $this->pengurusModel = new PengurusBEM();
+
     }
 
     public function viewRegister()
     {
-        include("views/register_view.php");
+        include("../views/register_view.php");
     }
 
     public function registerAccount()
@@ -36,7 +37,7 @@ class PengurusController
 
     public function viewLogin()
     {
-        include("views/login_view.php");
+        include("../views/login_view.php");
     }
 
     public function loginAccount()
@@ -45,24 +46,33 @@ class PengurusController
             $nim = $_POST['nim'];
             $password = $_POST['password'];
     
-            $pengurus = $this->pengurusModel->login($nim, $password);
-            if ($pengurus) {
+            // Memastikan method validateLogin dipanggil dari model
+            if ($this->pengurusModel->validateLogin($nim, $password)) {
                 session_start();
                 $_SESSION['logged_in'] = true;
-                $_SESSION['pengurus_id'] = $pengurus['nim'];
-                header("Location: views/list_proker.php");
+                $_SESSION['pengurus_id'] = $nim; // gunakan nim sebagai ID pengurus
+                header("Location: ../views/list_proker.php");
                 exit();
             } else {
                 echo "NIM atau Password salah";
             }
         }
     }
+
+    
     
     public function logout()
     {
         session_start();
         session_destroy();
-        header("Location: views/login_view.php");
+        header("Location: ../views/login_view.php");
         exit();
     }
-}    
+
+    
+}   
+
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    $controller = new PengurusController();
+    $controller->logout();
+}

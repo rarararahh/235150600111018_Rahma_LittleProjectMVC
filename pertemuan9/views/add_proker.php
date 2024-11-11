@@ -6,7 +6,7 @@
 </head>
 <body>
     <h2>Tambah Proker</h2> 
-    <form method="POST" action="add_proker.php">
+    <form method="POST" action="../controllers/ProgramKerja.php?action=addProker">
         <input type="number" name="nomor" placeholder="Nomor Program" required><br><br>
         <input type="text" name="nama" placeholder="Nama Program" required><br><br>
         <input type="text" name="surat_keterangan" placeholder="Surat Keterangan" required><br><br>
